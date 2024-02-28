@@ -1,17 +1,17 @@
 <template>
   <div :class="{ 'sidebar-closed': !isOpen, 'sidebar-open': isOpen }">
     <button @click="toggleSidebar">☰</button>
-    <ul v-if="isOpen">
-      <li v-for="(document, index) in documents" :key="index">
-        {{ document.title }}
-      </li>
-    </ul>
+    <FileList></FileList>
   </div>
 </template>
 
 <script>
+import FileList from "./FileList.vue";
 export default {
   name: "SidebarComponent",
+  components: {
+    FileList,
+  },
   data() {
     return {
       isOpen: false,
@@ -33,7 +33,8 @@ export default {
 <style>
 .sidebar-open {
   /* Add your open sidebar styles */
-  border-right: 1px solid #ccc; /* Example if you want a border on the right when open */
+  border-right: 1px solid #ccc;
+  /* Example if you want a border on the right when open */
 }
 
 .sidebar-closed {
