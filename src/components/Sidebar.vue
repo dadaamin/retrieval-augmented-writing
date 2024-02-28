@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'sidebar-closed': !isOpen, 'sidebar-open': isOpen }">
     <button @click="toggleSidebar">☰</button>
-    <FileList></FileList>
+    <FileList v-if="isOpen"></FileList>
   </div>
 </template>
 
