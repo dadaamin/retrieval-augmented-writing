@@ -8,21 +8,20 @@ concurrency:
 
 jobs:
   lint:
+    name: lint
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./api
-
-    name: lint
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: environment.yml
+          environment-file: api/environment.yml
           environment-name: raw
-          cache-env: true
+          cache-environment: true
 
       - name: Install test dependencies
         shell: bash -l {0}
@@ -37,17 +36,21 @@ jobs:
           micromamba activate raw
           make lintci
 
-
+  test:
     name: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: environment.yml
+          environment-file: api/environment.yml
           environment-name: raw
-          cache-env: true
+          cache-environment: true
 
       - name: Install dev dependencies
         shell: bash -l {0}
