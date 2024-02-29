@@ -1,0 +1,11 @@
+name: raw
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - onnxruntime=1.17.0  # fix (29/02/24): https://stackoverflow.com/questions/78057262/cannot-update-llamaindex
+  - pip:
+    - llama-index==0.10.14
+    - fastapi==0.110.0

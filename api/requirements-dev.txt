@@ -1,0 +1,5 @@
+pytest
+pytest-cov
+pylint
+black~=24.0
+isort
