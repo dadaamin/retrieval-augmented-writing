@@ -19,7 +19,7 @@ jobs:
       - name: Create conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: environment.yml
+          environment-file: api/environment.yml
           environment-name: raw
           cache-environment: true
 
@@ -48,7 +48,7 @@ jobs:
       - name: Create conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: environment.yml
+          environment-file: api/environment.yml
           environment-name: raw
           cache-environment: true
 
