@@ -37,8 +37,8 @@ jobs:
           micromamba activate raw
           make lintci
 
-
-  name: test
+  test:
+    name: test
     steps:
       - uses: actions/checkout@v2
 
