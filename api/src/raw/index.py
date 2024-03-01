@@ -4,9 +4,10 @@ from pathlib import Path
 from llama_index.core import (
     Settings,
     SimpleDirectoryReader,
+    StorageContext,
     VectorStoreIndex,
+    load_index_from_storage,
 )
-from llama_index.core import StorageContext, load_index_from_storage
 from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient, models
@@ -24,15 +25,16 @@ class Index:
             client=client,
         )
 
-        if Path('./storage').exists():
+        if Path("./storage").exists():
             # When using an external vectorDB, it is necessary to explicitly persist the document store to support updating: https://github.com/run-llama/llama_index/issues/8832
-            storage_context = StorageContext.from_defaults(vector_store=vector_store, persist_dir="./storage")
+            storage_context = StorageContext.from_defaults(
+                vector_store=vector_store, persist_dir="./storage"
+            )
             index = load_index_from_storage(storage_context)
         else:
             index = VectorStoreIndex.from_vector_store(
                 vector_store=vector_store,
             )
-
 
         self.client = client
         self.index = index
@@ -86,29 +88,31 @@ def main(args):
 
 
 def arg_parser():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument(
         "command",
         help="What operation to do on the index.",
-        choices=['create', 'update', 'delete']
+        choices=["create", "update", "delete"],
     )
     parser.add_argument(
         "--qdrant_location",
         default="http://localhost:6333/",
         help="Qdrant url.",
-        required=False
+        required=False,
     )
     parser.add_argument(
         "--qdrant_collection",
         help="Name of Qdrant collection",
         default="mtb_protocols",
-        required=False
+        required=False,
     )
     parser.add_argument(
         "--data_path",
         default="data/",
         help="Where to read documents from (pdf, txt, ...).",
-        required=False
+        required=False,
     )
     return parser.parse_args()
 
