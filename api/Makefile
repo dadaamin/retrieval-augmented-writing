@@ -17,3 +17,7 @@ lintci:
 	pylint --recursive=y --disable=W,R,C ${CODE} ${TESTS}
 	black --check ${CODE} ${TESTS}
 	isort --check-only ${CODE} ${TESTS}
+
+
+run:
+	uvicorn raw.main:app --reload
