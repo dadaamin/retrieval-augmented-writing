@@ -20,4 +20,4 @@ lintci:
 
 
 run:
-	uvicorn main:app --reload
+	uvicorn raw.main:app --reload
