@@ -1,6 +1,6 @@
 import argparse
-from pathlib import Path
 import os
+from pathlib import Path
 
 from llama_index.core import (
     SimpleDirectoryReader,
@@ -9,14 +9,14 @@ from llama_index.core import (
     load_index_from_storage,
 )
 from llama_index.vector_stores.qdrant import QdrantVectorStore
-from qdrant_client import QdrantClient, AsyncQdrantClient, models
+from qdrant_client import AsyncQdrantClient, QdrantClient, models
 
 
 def get_index():
     vector_store = QdrantVectorStore(
         collection_name=os.environ["QDRANT_COLLECTION"],
         client=QdrantClient(os.environ["QDRANT_LOCATION"]),
-        aclient=AsyncQdrantClient(os.environ["QDRANT_LOCATION"])
+        aclient=AsyncQdrantClient(os.environ["QDRANT_LOCATION"]),
     )
 
     if Path("./storage").exists():

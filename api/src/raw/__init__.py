@@ -1,8 +1,8 @@
 from llama_index.core import Settings
 from llama_index.core.node_parser import SimpleNodeParser
 
-from raw.ollama import Ollama
 from raw.index import get_index
+from raw.ollama import Ollama
 
 
 def init_settings():

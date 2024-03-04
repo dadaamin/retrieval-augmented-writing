@@ -1,19 +1,16 @@
-import json
 import datetime
+import json
 import logging
-
-from pydantic import BaseModel
-
-from raw import init_settings, get_llm, get_chat_engine
-from fastapi import FastAPI, Depends, HTTPException, status, Request
-from fastapi.responses import StreamingResponse
-
-from llama_index.core.llms import ChatMessage, MessageRole, CompletionResponse
-from llama_index.core.llms.llm import LLM
-from llama_index.core.chat_engine.types import BaseChatEngine
-
 from typing import List
 
+from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.responses import StreamingResponse
+from llama_index.core.chat_engine.types import BaseChatEngine
+from llama_index.core.llms import ChatMessage, CompletionResponse, MessageRole
+from llama_index.core.llms.llm import LLM
+from pydantic import BaseModel
+
+from raw import get_chat_engine, get_llm, init_settings
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
