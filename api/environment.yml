@@ -10,5 +10,6 @@ dependencies:
     - llama-index==0.10.14
     - llama-index-vector-stores-qdrant
     - llama-index-embeddings-huggingface
+    - llama-index-llms-ollama
     - fastapi==0.110.0
     - uvicorn[standard]==0.27.1
