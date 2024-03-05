@@ -34,7 +34,14 @@ class CompleteData(BaseModel):
     prompt: str
 
 
-async def generate_messages(response_gen, request):
+async def generate_messages(response_gen, request, source_nodes=None):
+    if source_nodes:
+        source_nodes = [
+            {"node_id": node.id_, "text": node.text, "metadata": node.metadata}
+            for node in source_nodes
+        ]
+        yield json.dumps(source_nodes)
+
     start = datetime.datetime.utcnow()
     async for response in response_gen:
         if await request.is_disconnected():
@@ -119,6 +126,8 @@ async def chat(
 
     response = await chat_engine.astream_chat(lastMessage.content, messages)
     response_generator = generate_messages(
-        response.async_response_gen(), request=request
+        response.async_response_gen(),
+        request=request,
+        source_nodes=response.source_nodes,
     )
     return StreamingResponse(response_generator, media_type="application/json")
