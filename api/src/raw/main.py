@@ -9,8 +9,10 @@ from llama_index.core.chat_engine.types import BaseChatEngine
 from llama_index.core.llms import ChatMessage, CompletionResponse, MessageRole
 from llama_index.core.llms.llm import LLM
 from pydantic import BaseModel
+from llama_index.core.vector_stores.types import MetadataFilters, ExactMatchFilter
 
-from raw.engine import get_chat_engine, get_llm, init_settings
+
+from raw.engine import get_index, get_llm, init_settings
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -79,7 +81,7 @@ async def complete(data: CompleteData, request: Request, llm: LLM = Depends(get_
 async def chat(
     request: Request,
     data: ChatData,
-    chat_engine: BaseChatEngine = Depends(get_chat_engine),
+    index: BaseChatEngine = Depends(get_index),
 ):
     if len(data.messages) == 0:
         raise HTTPException(
@@ -101,6 +103,21 @@ async def chat(
         )
         for m in data.messages
     ]
+
+    chat_engine = index.as_chat_engine(
+        similarity_top_k=3,
+        chat_mode="condense_plus_context",
+        use_async=True,
+        filters=MetadataFilters(
+            filters=[
+                ExactMatchFilter(
+                    key="patient_id",
+                    value=data.patient_id,
+                )
+            ]
+        ),
+    )
+
     response = await chat_engine.astream_chat(lastMessage.content, messages)
     response_generator = generate_messages(
         response.async_response_gen(), request=request

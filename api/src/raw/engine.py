@@ -54,12 +54,6 @@ def get_llm():
     return Settings.llm
 
 
-def get_chat_engine():
-    return get_index().as_chat_engine(
-        similarity_top_k=3, chat_mode="condense_plus_context", use_async=True
-    )
-
-
 def load_documents(data_path):
     docs = SimpleDirectoryReader(data_path, filename_as_id=True).load_data()
     for doc in docs:
