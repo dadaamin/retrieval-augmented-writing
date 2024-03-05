@@ -8,7 +8,7 @@ services:
 
   api:
     build: api/
-    image: ikim/raw-backend
+    image: ikim/raw-api
     ports:
       - "8000:8000"
     environment:
@@ -19,7 +19,7 @@ services:
       - qdrant
 
   seed:
-    image: ikim/raw-backend
+    image: ikim/raw-api
     command: ./seed.sh
     environment:
       - QDRANT_LOCATION=http://host.docker.internal:6333/
