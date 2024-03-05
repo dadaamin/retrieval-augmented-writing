@@ -3,13 +3,17 @@ import os
 from pathlib import Path
 
 from llama_index.core import (
+    Settings,
     SimpleDirectoryReader,
     StorageContext,
     VectorStoreIndex,
     load_index_from_storage,
 )
+from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import AsyncQdrantClient, QdrantClient, models
+
+from raw.ollama import Ollama
 
 
 def get_index():
@@ -31,6 +35,23 @@ def get_index():
         )
 
     return index
+
+
+def init_settings():
+    Settings.llm = Ollama(
+        model="mixtral:latest",
+        base_url="https://mirage.kite.ume.de/ollama",
+        request_timeout=240,
+        temperature=0,
+    )
+
+    node_parser = SimpleNodeParser.from_defaults(chunk_size=512, chunk_overlap=32)
+    Settings.embed_model = "local:BAAI/bge-small-en-v1.5"
+    Settings.node_parser = node_parser
+
+
+def get_llm():
+    return Settings.llm
 
 
 def load_documents(data_path):
@@ -63,15 +84,16 @@ def create_index(data_path):
     index.storage_context.persist(persist_dir="./storage")
 
 
-def update_index(index, data_path):
+def update_index(data_path):
     index = get_index()
     docs = load_documents(data_path)
     updated = index.refresh_ref_docs(docs)
     for doc, is_new in zip(docs, updated):
         print(doc.get_doc_id(), f"Updated: {is_new}")
+    index.storage_context.persist(persist_dir="./storage")
 
 
-def delete_index(index):
+def delete_index():
     index = get_index()
     client = index.vector_store.client
     collection_name = index.vector_store.collection_name

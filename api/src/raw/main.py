@@ -8,9 +8,10 @@ from fastapi.responses import StreamingResponse
 from llama_index.core.chat_engine.types import BaseChatEngine
 from llama_index.core.llms import ChatMessage, CompletionResponse, MessageRole
 from llama_index.core.llms.llm import LLM
+from llama_index.core.vector_stores.types import ExactMatchFilter, MetadataFilters
 from pydantic import BaseModel
 
-from raw import get_chat_engine, get_llm, init_settings
+from raw.engine import get_index, get_llm, init_settings
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -19,20 +20,28 @@ init_settings()
 app = FastAPI()
 
 
-class _Message(BaseModel):
+class Message(BaseModel):
     role: MessageRole
     content: str
 
 
-class _ChatData(BaseModel):
-    messages: List[_Message]
+class ChatData(BaseModel):
+    messages: List[Message]
+    patient_id: str
 
 
-class _CompleteData(BaseModel):
+class CompleteData(BaseModel):
     prompt: str
 
 
-async def generate_messages(response_gen, request):
+async def generate_messages(response_gen, request, source_nodes=None):
+    if source_nodes:
+        source_nodes = [
+            {"node_id": node.id_, "text": node.text, "metadata": node.metadata}
+            for node in source_nodes
+        ]
+        yield json.dumps(source_nodes)
+
     start = datetime.datetime.utcnow()
     async for response in response_gen:
         if await request.is_disconnected():
@@ -68,7 +77,7 @@ def read_root():
 
 
 @app.post("/complete")
-async def complete(data: _CompleteData, request: Request, llm: LLM = Depends(get_llm)):
+async def complete(data: CompleteData, request: Request, llm: LLM = Depends(get_llm)):
     response = await llm.astream_complete(data.prompt)
     response_generator = generate_messages(response, request=request)
     return StreamingResponse(response_generator, media_type="application/json")
@@ -77,8 +86,8 @@ async def complete(data: _CompleteData, request: Request, llm: LLM = Depends(get
 @app.post("/chat")
 async def chat(
     request: Request,
-    data: _ChatData,
-    chat_engine: BaseChatEngine = Depends(get_chat_engine),
+    data: ChatData,
+    index: BaseChatEngine = Depends(get_index),
 ):
     if len(data.messages) == 0:
         raise HTTPException(
@@ -100,8 +109,25 @@ async def chat(
         )
         for m in data.messages
     ]
+
+    chat_engine = index.as_chat_engine(
+        similarity_top_k=3,
+        chat_mode="condense_plus_context",
+        use_async=True,
+        filters=MetadataFilters(
+            filters=[
+                ExactMatchFilter(
+                    key="patient_id",
+                    value=data.patient_id,
+                )
+            ]
+        ),
+    )
+
     response = await chat_engine.astream_chat(lastMessage.content, messages)
     response_generator = generate_messages(
-        response.async_response_gen(), request=request
+        response.async_response_gen(),
+        request=request,
+        source_nodes=response.source_nodes,
     )
     return StreamingResponse(response_generator, media_type="application/json")
