@@ -10,7 +10,7 @@ from llama_index.core.llms import ChatMessage, CompletionResponse, MessageRole
 from llama_index.core.llms.llm import LLM
 from pydantic import BaseModel
 
-from raw import get_chat_engine, get_llm, init_settings
+from raw.engine import get_chat_engine, get_llm, init_settings
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -19,16 +19,17 @@ init_settings()
 app = FastAPI()
 
 
-class _Message(BaseModel):
+class Message(BaseModel):
     role: MessageRole
     content: str
 
 
-class _ChatData(BaseModel):
-    messages: List[_Message]
+class ChatData(BaseModel):
+    messages: List[Message]
+    patient_id: str
 
 
-class _CompleteData(BaseModel):
+class CompleteData(BaseModel):
     prompt: str
 
 
@@ -68,7 +69,7 @@ def read_root():
 
 
 @app.post("/complete")
-async def complete(data: _CompleteData, request: Request, llm: LLM = Depends(get_llm)):
+async def complete(data: CompleteData, request: Request, llm: LLM = Depends(get_llm)):
     response = await llm.astream_complete(data.prompt)
     response_generator = generate_messages(response, request=request)
     return StreamingResponse(response_generator, media_type="application/json")
@@ -77,7 +78,7 @@ async def complete(data: _CompleteData, request: Request, llm: LLM = Depends(get
 @app.post("/chat")
 async def chat(
     request: Request,
-    data: _ChatData,
+    data: ChatData,
     chat_engine: BaseChatEngine = Depends(get_chat_engine),
 ):
     if len(data.messages) == 0:
