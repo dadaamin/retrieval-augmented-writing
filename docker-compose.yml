@@ -1,0 +1,29 @@
+# TODO: add volume for qdrant and persist docstore of llama-index
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+
+  api:
+    build: api/
+    image: ikim/raw-api
+    ports:
+      - "8000:8000"
+    environment:
+      - QDRANT_LOCATION=http://host.docker.internal:6333/
+      - QDRANT_COLLECTION=mtb_protocols
+      - OLLAMA_BASE_URL=https://mirage.kite.ume.de/ollama
+    depends_on:
+      - qdrant
+
+  seed:
+    image: ikim/raw-api
+    command: ./seed.sh
+    environment:
+      - QDRANT_LOCATION=http://host.docker.internal:6333/
+      - QDRANT_COLLECTION=mtb_protocols
+      - OLLAMA_BASE_URL=https://mirage.kite.ume.de/ollama
+    depends_on:
+      - qdrant

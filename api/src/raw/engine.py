@@ -40,7 +40,7 @@ def get_index():
 def init_settings():
     Settings.llm = Ollama(
         model="mixtral:latest",
-        base_url="https://mirage.kite.ume.de/ollama",
+        base_url=os.environ["OLLAMA_BASE_URL"],
         request_timeout=240,
         temperature=0,
     )
@@ -101,6 +101,8 @@ def delete_index():
 
 
 def main(args):
+    init_settings()
+
     if args.command == "create":
         create_index(args.data_path)
     elif args.command == "update":
