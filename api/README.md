@@ -19,11 +19,12 @@ Start services.
 docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:latest
 
 # Insert seed data
-python -m raw.index create --data_path data/
+python -m raw.engine create --data_path data/
 
 # Run search API
 export QDRANT_LOCATION=http://localhost:6333/
 export QDRANT_COLLECTION=mtb_protocols
+export OLLAMA_BASE_URL=https://mirage.kite.ume.de/ollama
 uvicorn raw.main:app --reload
 ```
 
@@ -31,10 +32,10 @@ Data management. Can also manage collections in Qdrant dashboard: http://localho
 
 ```sh
 # Updating data
-python -m raw.index update --data_path data/
+python -m raw.engine update --data_path data/
 
 # Remove collection
-python -m raw.index delete
+python -m raw.engine delete
 ```
 
 ## Development Tools

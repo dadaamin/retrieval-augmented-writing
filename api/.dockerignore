@@ -1,0 +1,9 @@
+*
+**
+
+!environment.yml
+!src/*
+!data/*
+!docker/*
+!setup.py
+!README.md
