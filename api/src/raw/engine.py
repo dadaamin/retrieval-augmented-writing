@@ -84,7 +84,7 @@ def create_index(data_path):
     index.storage_context.persist(persist_dir="./storage")
 
 
-def update_index(index, data_path):
+def update_index(data_path):
     index = get_index()
     docs = load_documents(data_path)
     updated = index.refresh_ref_docs(docs)
@@ -93,7 +93,7 @@ def update_index(index, data_path):
     index.storage_context.persist(persist_dir="./storage")
 
 
-def delete_index(index):
+def delete_index():
     index = get_index()
     client = index.vector_store.client
     collection_name = index.vector_store.collection_name
