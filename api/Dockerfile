@@ -20,4 +20,4 @@ COPY docker/seed.sh /app/seed.sh
 RUN conda run -n raw pip install -e .
 
 EXPOSE 8000
-CMD entrypoint.sh
+CMD ./entrypoint.sh

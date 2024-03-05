@@ -101,6 +101,8 @@ def delete_index():
 
 
 def main(args):
+    init_settings()
+
     if args.command == "create":
         create_index(args.data_path)
     elif args.command == "update":
