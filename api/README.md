@@ -27,7 +27,7 @@ export QDRANT_COLLECTION=mtb_protocols
 uvicorn raw.main:app --reload
 ```
 
-Data management
+Data management. Can also manage collections in Qdrant dashboard: http://localhost:6333/dashboard#/
 
 ```sh
 # Updating data
@@ -35,12 +35,6 @@ python -m raw.index update --data_path data/
 
 # Remove collection
 python -m raw.index delete
-
-# List all collections
-curl -X GET http://localhost:6333/collections
-
-# Remove existing collection
-curl -X DELETE http://localhost:6333/collections/<collection_name>
 ```
 
 ## Development Tools
