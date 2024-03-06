@@ -6,6 +6,7 @@ import string
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from llama_index.core.chat_engine.types import BaseChatEngine
 from llama_index.core.llms import ChatMessage, CompletionResponse, MessageRole
@@ -21,6 +22,18 @@ logger.setLevel(logging.INFO)
 init_settings()
 app = FastAPI()
 
+origins = [
+    "http://localhost:8080",  # Adjust this to your Vue app's origin
+    # "http://your-vue-app.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Message(BaseModel):
     role: MessageRole
@@ -115,6 +128,52 @@ def document(patient_id: str):
 
 @app.post("/chat")
 async def chat(
+    request: Request,
+    data: ChatData,
+    index: BaseChatEngine = Depends(get_index),
+):
+    if len(data.messages) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No messages provided",
+        )
+
+    lastMessage = data.messages.pop()
+    if lastMessage.role != MessageRole.USER:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Last message must be from user",
+        )
+
+    messages = [
+        ChatMessage(
+            role=m.role,
+            content=m.content,
+        )
+        for m in data.messages
+    ]
+
+    chat_engine = index.as_chat_engine(
+        similarity_top_k=3,
+        chat_mode="context",
+        use_async=False,
+        filters=MetadataFilters(
+            filters=[
+                ExactMatchFilter(
+                    key="patient_id",
+                    value=data.patient_id,
+                )
+            ]
+        ),
+    )
+
+    response = chat_engine.chat(lastMessage.content, messages)
+    return response
+
+
+
+@app.post("/stream_chat")
+async def steam_chat(
     request: Request,
     data: ChatData,
     index: BaseChatEngine = Depends(get_index),
