@@ -107,7 +107,7 @@ def document(patient_id: str):
             "id": i,
             "created_at": generate_random_date(),
             "filename": generate_random_filename(),
-            "patient_id": f"p{patient_id}",
+            "patient_id": patient_id,
         }
         for i in range(5)
     ]
