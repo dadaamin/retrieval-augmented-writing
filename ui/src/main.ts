@@ -6,10 +6,7 @@ import store from "./store";
 import PrimeVue from "primevue/config";
 import Button from "primevue/button";
 
-import "./assets/main.css";
-import "primevue/resources/themes/aura-light-teal/theme.css";
-import "primevue/resources/primevue.min.css";
-// import "primeicons/primeicons.css";
+import "@/assets/styles.scss";
 
 const app = createApp(App);
 app.use(PrimeVue);
