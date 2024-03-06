@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+import random
+import string
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
@@ -81,6 +83,34 @@ async def complete(data: CompleteData, request: Request, llm: LLM = Depends(get_
     response = await llm.astream_complete(data.prompt)
     response_generator = generate_messages(response, request=request)
     return StreamingResponse(response_generator, media_type="application/json")
+
+
+def generate_random_date():
+    start_date = datetime.date(2020, 1, 1)
+    end_date = datetime.date.today()
+    random_date = start_date + datetime.timedelta(
+        days=random.randint(0, (end_date - start_date).days)
+    )
+    return random_date.isoformat()
+
+
+def generate_random_filename():
+    letters = string.ascii_lowercase
+    return "".join(random.choice(letters) for _ in range(10)) + ".pdf"
+
+
+@app.get("/documents")
+def document(patient_id: str):
+    random.seed(patient_id)
+    return [
+        {
+            "id": i,
+            "created_at": generate_random_date(),
+            "filename": generate_random_filename(),
+            "patient_id": f"p{patient_id}",
+        }
+        for i in range(5)
+    ]
 
 
 @app.post("/chat")
