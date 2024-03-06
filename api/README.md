@@ -1,10 +1,11 @@
 # Backend (FastAPI / llama-index)
 
 ```sh
-conda create -n raw python=3.12 pip
+conda env update -f environment.yml
 conda activate raw
 
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
+pip install -e .
 
 # on macOS you may have to run this if you get "OMP Error #15: ..."
 conda install nomkl
