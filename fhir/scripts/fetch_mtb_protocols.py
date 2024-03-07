@@ -53,13 +53,13 @@ def download_doc(url, id):
     output_file = data_dir / f"{id}.txt"
     if output_file.exists():
         return output_file
-    # res = auth.session.get(url)
-    # text = res.content.decode("utf-8")
+    res = auth.session.get(url)
+    text = res.content.decode("utf-8")
     
-    # if re.search(pattern, text):
-    #     with open(output_file, "w") as f_w:
-    #         f_w.write(text)
-    #     return output_file
+    if re.search(pattern, text):
+        with open(output_file, "w") as f_w:
+            f_w.write(text)
+        return output_file
 
 text_documents["document_path"] = text_documents.apply(lambda x: download_doc(x["presentedForm.url"], x["id"]), axis=1)
 
