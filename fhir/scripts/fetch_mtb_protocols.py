@@ -8,6 +8,8 @@ import requests
 from pathlib import Path
 import re
 import json
+from tqdm.auto import tqdm
+tqdm.pandas()
 
 #Params
 DICOM_WEB_URL = "https://ship.ume.de/app/DicomWeb/view/deidentified/EA"
@@ -61,7 +63,8 @@ def download_doc(url, id):
             f_w.write(text)
         return output_file
 
-text_documents["document_path"] = text_documents.apply(lambda x: download_doc(x["presentedForm.url"], x["id"]), axis=1)
+tqdm.pandas(desc="Downloading documents")
+text_documents["document_path"] = text_documents.progress_apply(lambda x: download_doc(x["presentedForm.url"], x["id"]), axis=1)
 
 text_documents = text_documents[text_documents["document_path"].notna()]
 
