@@ -20,10 +20,6 @@ class ApiService {
     return this.apiClient.get("/");
   }
 
-  public async complete(data: CompletionRequest): Promise<ApiResponse<any>> {
-    return this.apiClient.post("/complete", data);
-  }
-
   public async getDocuments(patientId: string): Promise<Response> {
     const url = `${this.baseUrl}/documents?patient_id=${patientId}`;
     return fetch(url);
