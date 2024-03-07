@@ -1,7 +1,9 @@
+import logging
 import json
 import os
 from pathlib import Path
 
+import requests
 from dotenv import find_dotenv, load_dotenv
 from tqdm.auto import tqdm
 
@@ -14,9 +16,15 @@ form_to_ext = {
     "application/pdf": "pdf",
     "image/tiff": "tiff",
     "application/msword": "docx",
+    "image/jpeg": "jpeg",
+    "application/zip": "zip",
+    "text/richtext; charset=UTF-8": "rtf",
 }
 
 load_dotenv(find_dotenv())
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 auth = Ahoy(
     auth_type="token",
@@ -50,7 +58,12 @@ def download_document(doc):
             doc["presentedForm.creation"],
         ):
             if not Path(f"{base_path}.{form_to_ext[form]}").exists():
-                content = download_file(url)
+                try:
+                    content = download_file(url)
+                except requests.exceptions.HTTPError:
+                    logger.info(f'Could not download file ({base_path}): {url}')
+                    continue
+
                 with open(f"{base_path}.{form_to_ext[form]}", "wb") as f_w:
                     f_w.write(content)
             doc_path.append(f"{base_path}.{form_to_ext[form]}")
@@ -66,8 +79,13 @@ def download_document(doc):
 
     else:
         doc_path = f"{base_path}.{form_to_ext[doc['presentedForm.contentType']]}"
+        url = doc["presentedForm.url"]
         if not Path(doc_path).exists():
-            content = download_file(doc["presentedForm.url"])
+            try:
+                content = download_file(url)
+            except requests.exceptions.HTTPError:
+                logger.info(f'Could not download file ({base_path}): {url}')
+                return presented_form
             with open(doc_path, "wb") as f_w:
                 f_w.write(content)
 
@@ -115,7 +133,7 @@ def fetch_patient_documents(patient_id):
     return documents
 
 
-for patient in mtb_patients:
+for patient in mtb_patients[:10]:
     documents = fetch_patient_documents(patient["patient_id"])
 
 documents = documents.to_dict(orient="records")
