@@ -20,13 +20,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import ApiService from "@/services/ApiService.ts";
+import ApiService from "@/services/ApiService";
 import moment from "moment";
 
 const files = ref([]);
 const selectedFiles = ref([]);
 
-function timeFilter(date) {
+function timeFilter(date: string) {
     return moment(date).format("DD.MM.YYYY");
 }
 
