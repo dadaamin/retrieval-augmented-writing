@@ -6,7 +6,7 @@
       <div class="flex-grow-1 flex flex-column gap-2">
         <template v-for="(chunk, index) in chunks" :key="index">
           <div class="border-1 border-200 border-round p-2">
-            <p class="text-sm text-light">{{ chunk.node.text }}</p>
+            <p class="text-sm text-light">{{ chunk.text }}</p>
           </div>
         </template>
       </div>
@@ -36,10 +36,32 @@ import ApiService from "@/services/ApiService.ts";
 import ChatRequestBuilder from "@/services/types/ChatRequest.ts";
 
 const chunks = ref([]);
-const query = ref("");
+const query = ref("Wie ist die Diagnose?");
 const queryResponse = ref("");
 
 const props = defineProps(["patientId"]);
+
+async function readStream(reader) {
+  let { done, value } = await reader.read();
+
+  while (!done) {
+    const message = new TextDecoder().decode(value).trim();
+    // sometimes more than one token is received at the same time, these are separated by newlines
+    const messages = message.split("\n");
+
+    messages.forEach((message) => {
+      const jsonMessage = JSON.parse(message);
+
+      if (Array.isArray(jsonMessage)) {
+        chunks.value = jsonMessage;
+      } else {
+        queryResponse.value += jsonMessage["message"];
+      }
+    });
+
+    ({ done, value } = await reader.read());
+  }
+}
 
 async function sendQuery() {
   try {
@@ -51,13 +73,9 @@ async function sendQuery() {
       .addMessage("user", query.value)
       .build();
 
-    console.log(chatRequest);
     const response = await ApiService.stream_chat(chatRequest);
-    queryResponse.value = response.data["response"];
-    chunks.value = response.data["source_nodes"];
-    // console.log(response.data);
-    console.log(response.data["source_nodes"]);
-    // Process your data here
+    const reader = response.body.getReader();
+    readStream(reader);
   } catch (error) {
     console.error("API call failed:", error);
   }
