@@ -1,8 +1,6 @@
 <template>
-    <div
-        class="w-full h-full p-3 border-1 border-200 border-round shadow-none bg-white"
-    >
-        <div class="h-full w-full flex flex-column align-items-stretch gap-2">
+    <Splitter class="h-full border-1 border-200" layout="vertical">
+        <SplitterPanel class="flex">
             <div class="flex-grow-1 flex flex-column gap-2">
                 <template v-for="(chunk, index) in chunks" :key="index">
                     <div class="border-1 border-200 border-round p-2">
@@ -10,12 +8,16 @@
                     </div>
                 </template>
             </div>
-            <div
-                v-if="queryResponse"
-                class="border-200 border-1 border-round h-2 p-3 flex-grow-0 flex-column"
-            >
-                <p class="text-lg font-medium">Mixtral</p>
-                <p>{{ queryResponse }}</p>
+        </SplitterPanel>
+        <SplitterPanel class="flex flex-column gap-1 p-2">
+            <div class="flex-grow-1">
+                <div
+                    v-if="queryResponse"
+                    class="border-200 border-1 border-round h-2 p-3 flex-grow-0 flex-column"
+                >
+                    <p class="text-lg font-medium">Mixtral</p>
+                    <p>{{ queryResponse }}</p>
+                </div>
             </div>
             <div class="flex gap-1">
                 <InputText
@@ -30,8 +32,8 @@
                     @click="sendQuery"
                 ></Button>
             </div>
-        </div>
-    </div>
+        </SplitterPanel>
+    </Splitter>
 </template>
 
 <script setup>
