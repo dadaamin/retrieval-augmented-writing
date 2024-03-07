@@ -1,11 +1,11 @@
 <template>
   <Listbox
+    v-model="selectedFiles"
     multiple
     filter
-    v-model="selectedFiles"
     :options="files"
-    optionLabel="filename"
-    optionValue="id"
+    option-label="filename"
+    option-value="id"
   >
     <template #option="opt">
       <div class="flex align-items-end">
@@ -18,7 +18,7 @@
   >
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import ApiService from "@/services/ApiService.ts";
 import moment from "moment";

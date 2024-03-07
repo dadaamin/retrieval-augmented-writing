@@ -19,9 +19,9 @@
       </div>
       <div class="flex gap-1">
         <InputText
+          v-model="query"
           class="flex-grow-1"
           type="text"
-          v-model="query"
           @keyup.enter="sendQuery"
         ></InputText>
         <Button label="Send" icon="pi pi-send" @click="sendQuery"></Button>

@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="input-area">
-      <input type="text" v-model="newMessage" @keyup.enter="sendMessage" />
+      <input v-model="newMessage" type="text" @keyup.enter="sendMessage" />
       <button @click="sendMessage">Send</button>
     </div>
   </div>
