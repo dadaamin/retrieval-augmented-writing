@@ -1,12 +1,12 @@
 <template>
-  <div class="writing-window">
-    <!-- Form elements go here -->
-  </div>
+    <div class="writing-window">
+        <!-- Form elements go here -->
+    </div>
 </template>
 
 <script>
 export default {
-  name: "WritingWindowComponent",
+    name: "WritingWindowComponent",
 };
 </script>
 

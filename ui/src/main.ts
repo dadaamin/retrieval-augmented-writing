@@ -19,6 +19,7 @@ import Fieldset from "primevue/fieldset";
 import Avatar from "primevue/avatar";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
+import ColorPicker from "primevue/colorpicker";
 
 import DraggableDirective from "@/directives/DraggableDirective";
 import DroppableDirective from "@/directives/DroppableDirective";
@@ -46,6 +47,7 @@ app.component("Fieldset", Fieldset);
 app.component("Avatar", Avatar);
 app.component("InputGroup", InputGroup);
 app.component("InputGroupAddon", InputGroupAddon);
+app.component("ColorPicker", ColorPicker);
 
 // Register directives
 app.directive("draggable", DraggableDirective);

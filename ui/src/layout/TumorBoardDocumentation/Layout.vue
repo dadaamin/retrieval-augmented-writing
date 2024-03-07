@@ -1,31 +1,41 @@
 <template>
-  <!-- <div class="w-full gap-3 flex align-items-stretch"> -->
-  <!-- <FileView class="w-2 border-200" /> -->
-  <Splitter class="w-full border-none bg-none" style="background: transparent">
-    <SplitterPanel :size="20" :min-size="10" class="flex align-items-stretch">
-      <FileView :patient-id="patientId" class="w-full border-200"></FileView>
-    </SplitterPanel>
-    <SplitterPanel
-      style="margin-left: 1rem"
-      :size="80"
-      :min-size="20"
-      :unstyled="false"
+    <!-- <div class="w-full gap-3 flex align-items-stretch"> -->
+    <!-- <FileView class="w-2 border-200" /> -->
+    <Splitter
+        class="w-full border-none bg-none"
+        style="background: transparent"
     >
-      <Splitter class="gap-2" style="background: transparent">
-        <SplitterPanel>
-          <ScrollPanel class="w-full h-full">
-            <FileIndexing :patient-id="patientId"></FileIndexing>
-          </ScrollPanel>
+        <SplitterPanel
+            :size="20"
+            :min-size="10"
+            class="flex align-items-stretch"
+        >
+            <FileView
+                :patient-id="patientId"
+                class="w-full border-200"
+            ></FileView>
         </SplitterPanel>
-        <SplitterPanel>
-          <ScrollPanel class="w-full h-full">
-            <Documentation></Documentation>
-          </ScrollPanel>
+        <SplitterPanel
+            style="margin-left: 1rem"
+            :size="80"
+            :min-size="20"
+            :unstyled="false"
+        >
+            <Splitter class="gap-2" style="background: transparent">
+                <SplitterPanel>
+                    <ScrollPanel class="w-full h-full">
+                        <FileIndexing :patient-id="patientId"></FileIndexing>
+                    </ScrollPanel>
+                </SplitterPanel>
+                <SplitterPanel>
+                    <ScrollPanel class="w-full h-full">
+                        <Documentation></Documentation>
+                    </ScrollPanel>
+                </SplitterPanel>
+            </Splitter>
         </SplitterPanel>
-      </Splitter>
-    </SplitterPanel>
-  </Splitter>
-  <!-- </div> -->
+    </Splitter>
+    <!-- </div> -->
 </template>
 
 <script setup>
