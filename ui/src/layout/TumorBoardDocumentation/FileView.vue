@@ -35,8 +35,7 @@ const props = defineProps(["patientId"]);
 async function fetchData() {
   try {
     const response = await ApiService.getDocuments(props.patientId);
-    files.value = response.data;
-    // Process your data here
+    files.value = await response.json();
   } catch (error) {
     console.error("API call failed:", error);
   }

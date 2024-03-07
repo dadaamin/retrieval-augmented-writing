@@ -24,10 +24,9 @@ class ApiService {
     return this.apiClient.post("/complete", data);
   }
 
-  public async getDocuments(
-    patientId: string
-  ): Promise<ApiResponse<Document[]>> {
-    return this.apiClient.get(`/documents?patient_id=${patientId}`);
+  public async getDocuments(patientId: string): Promise<Response> {
+    const url = `${this.baseUrl}/documents?patient_id=${patientId}`;
+    return fetch(url);
   }
 
   public async chat(data: ChatRequest): Promise<ApiResponse<any>> {
