@@ -52,7 +52,7 @@ async function sendQuery() {
       .build();
 
     console.log(chatRequest);
-    const response = await ApiService.stream_chat(chatRequest);
+    const response = await ApiService.chat(chatRequest);
     queryResponse.value = response.data["response"];
     chunks.value = response.data["source_nodes"];
     // console.log(response.data);
