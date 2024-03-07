@@ -4,6 +4,6 @@ channels:
 dependencies:
   - python=3.12
   - pip
-  - libmagic
   - pip:
-    - fhirpack
+    - fhir-pyrate
+    - python-dotenv
