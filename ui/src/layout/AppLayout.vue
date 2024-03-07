@@ -70,8 +70,8 @@ const isOutsideClicked = (event) => {
         <!-- <div class="layout-sidebar">
       <app-sidebar></app-sidebar>
     </div> -->
-        <div class="layout-main-container">
-            <div class="layout-main flex align-items-stretch">
+        <div class="layout-main-container h-full">
+            <div class="layout-main flex align-items-stretch h-full">
                 <router-view></router-view>
             </div>
             <!-- <app-footer></app-footer> -->
@@ -82,4 +82,8 @@ const isOutsideClicked = (event) => {
     <Toast />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout-wrapper {
+    height: 100vh;
+}
+</style>
