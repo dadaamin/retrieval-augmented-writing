@@ -6,7 +6,7 @@
       <div class="flex-grow-1 flex flex-column gap-2">
         <template v-for="(chunk, index) in chunks" :key="index">
           <div class="border-1 border-200 border-round p-2">
-            <p class="text-sm text-light">{{ chunk.node.text }}</p>
+            <p class="text-sm text-light">{{ chunk.text }}</p>
           </div>
         </template>
       </div>
@@ -36,10 +36,29 @@ import ApiService from "@/services/ApiService.ts";
 import ChatRequestBuilder from "@/services/types/ChatRequest.ts";
 
 const chunks = ref([]);
-const query = ref("");
+const query = ref("Wie ist die Diagnose?");
 const queryResponse = ref("");
 
 const props = defineProps(["patientId"]);
+
+async function readStream(reader) {
+  let { done, value } = await reader.read();
+
+  while (!done) {
+    const response = new TextDecoder().decode(value).trim();
+    // When streaming, sometimes more than one response is received at a time. Individual responses are separated by newlines.
+    const messages = response.split("\n");
+    messages.forEach((message) => {
+      const data = JSON.parse(message);
+      if (data.source_nodes !== undefined) {
+        chunks.value = data.source_nodes;
+      }
+      queryResponse.value += data["message"];
+    });
+
+    ({ done, value } = await reader.read());
+  }
+}
 
 async function sendQuery() {
   try {
@@ -51,13 +70,9 @@ async function sendQuery() {
       .addMessage("user", query.value)
       .build();
 
-    console.log(chatRequest);
-    const response = await ApiService.chat(chatRequest);
-    queryResponse.value = response.data["response"];
-    chunks.value = response.data["source_nodes"];
-    // console.log(response.data);
-    console.log(response.data["source_nodes"]);
-    // Process your data here
+    const response = await ApiService.stream_chat(chatRequest);
+    const reader = response.body.getReader();
+    readStream(reader);
   } catch (error) {
     console.error("API call failed:", error);
   }
