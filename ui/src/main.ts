@@ -18,6 +18,9 @@ import Button from "primevue/button";
 import Fieldset from "primevue/fieldset";
 import Avatar from "primevue/avatar";
 
+import DraggableDirective from "@/directives/DraggableDirective";
+import DroppableDirective from "@/directives/DroppableDirective";
+
 import "@/assets/styles.scss";
 
 const app = createApp(App);
@@ -25,6 +28,7 @@ app.use(PrimeVue);
 app.use(store);
 app.use(router);
 
+// Register Components
 app.component("Splitter", Splitter);
 app.component("SplitterPanel", SplitterPanel);
 app.component("ScrollPanel", ScrollPanel);
@@ -38,5 +42,9 @@ app.component("InputText", InputText);
 app.component("Button", Button);
 app.component("Fieldset", Fieldset);
 app.component("Avatar", Avatar);
+
+// Register directives
+app.directive("draggable", DraggableDirective);
+app.directive("droppable", DroppableDirective);
 
 app.mount("#app");
