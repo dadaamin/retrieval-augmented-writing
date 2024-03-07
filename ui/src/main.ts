@@ -17,6 +17,11 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Fieldset from "primevue/fieldset";
 import Avatar from "primevue/avatar";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
+
+import DraggableDirective from "@/directives/DraggableDirective";
+import DroppableDirective from "@/directives/DroppableDirective";
 
 import "@/assets/styles.scss";
 
@@ -25,6 +30,7 @@ app.use(PrimeVue);
 app.use(store);
 app.use(router);
 
+// Register Components
 app.component("Splitter", Splitter);
 app.component("SplitterPanel", SplitterPanel);
 app.component("ScrollPanel", ScrollPanel);
@@ -38,5 +44,11 @@ app.component("InputText", InputText);
 app.component("Button", Button);
 app.component("Fieldset", Fieldset);
 app.component("Avatar", Avatar);
+app.component("InputGroup", InputGroup);
+app.component("InputGroupAddon", InputGroupAddon);
+
+// Register directives
+app.directive("draggable", DraggableDirective);
+app.directive("droppable", DroppableDirective);
 
 app.mount("#app");

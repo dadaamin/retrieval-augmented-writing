@@ -2,13 +2,13 @@
   <!-- <div class="w-full gap-3 flex align-items-stretch"> -->
   <!-- <FileView class="w-2 border-200" /> -->
   <Splitter class="w-full border-none bg-none" style="background: transparent">
-    <SplitterPanel :size="20" :minSize="10" class="flex align-items-stretch">
+    <SplitterPanel :size="20" :min-size="10" class="flex align-items-stretch">
       <FileView :patient-id="patientId" class="w-full border-200"></FileView>
     </SplitterPanel>
     <SplitterPanel
       style="margin-left: 1rem"
       :size="80"
-      :minSize="20"
+      :min-size="20"
       :unstyled="false"
     >
       <Splitter class="gap-2" style="background: transparent">

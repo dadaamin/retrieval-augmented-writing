@@ -8,8 +8,8 @@
       v-for="file in files"
       :key="file.name"
       :file="file"
-      @select="selectFile"
       :class="{ selected: selectedFile && selectedFile.name === file.name }"
+      @select="selectFile"
     />
   </div>
 </template>

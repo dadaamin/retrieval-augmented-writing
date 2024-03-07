@@ -65,7 +65,7 @@ const applyScale = () => {
   <Sidebar
     v-model:visible="visible"
     position="right"
-    :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
+    :transition-options="'.3s cubic-bezier(0, 0, 0.2, 1)'"
     class="layout-config-sidebar w-20rem"
   >
     <h5>Scale</h5>
@@ -73,25 +73,25 @@ const applyScale = () => {
       <Button
         icon="pi pi-minus"
         type="button"
-        @click="decrementScale()"
         class="p-button-text p-button-rounded w-2rem h-2rem mr-2"
         :disabled="layoutConfig.scale.value === scales[0]"
+        @click="decrementScale()"
       ></Button>
       <div class="flex gap-2 align-items-center">
         <i
-          class="pi pi-circle-fill text-300"
           v-for="s in scales"
           :key="s"
+          class="pi pi-circle-fill text-300"
           :class="{ 'text-primary-500': s === layoutConfig.scale.value }"
         ></i>
       </div>
       <Button
         icon="pi pi-plus"
         type="button"
-        pButton
-        @click="incrementScale()"
+        p-button
         class="p-button-text p-button-rounded w-2rem h-2rem ml-2"
         :disabled="layoutConfig.scale.value === scales[scales.length - 1]"
+        @click="incrementScale()"
       ></Button>
     </div>
 
@@ -100,20 +100,20 @@ const applyScale = () => {
       <div class="flex">
         <div class="field-radiobutton flex-1">
           <RadioButton
+            v-model="layoutConfig.menuMode.value"
             name="menuMode"
             value="static"
-            v-model="layoutConfig.menuMode.value"
-            inputId="mode1"
+            input-id="mode1"
           ></RadioButton>
           <label for="mode1">Static</label>
         </div>
 
         <div class="field-radiobutton flex-1">
           <RadioButton
+            v-model="layoutConfig.menuMode.value"
             name="menuMode"
             value="overlay"
-            v-model="layoutConfig.menuMode.value"
-            inputId="mode2"
+            input-id="mode2"
           ></RadioButton>
           <label for="mode2">Overlay</label>
         </div>
@@ -125,19 +125,19 @@ const applyScale = () => {
       <div class="flex">
         <div class="field-radiobutton flex-1">
           <RadioButton
+            v-model="layoutConfig.inputStyle.value"
             name="inputStyle"
             value="outlined"
-            v-model="layoutConfig.inputStyle.value"
-            inputId="outlined_input"
+            input-id="outlined_input"
           ></RadioButton>
           <label for="outlined_input">Outlined</label>
         </div>
         <div class="field-radiobutton flex-1">
           <RadioButton
+            v-model="layoutConfig.inputStyle.value"
             name="inputStyle"
             value="filled"
-            v-model="layoutConfig.inputStyle.value"
-            inputId="filled_input"
+            input-id="filled_input"
           ></RadioButton>
           <label for="filled_input">Filled</label>
         </div>
