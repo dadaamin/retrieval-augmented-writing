@@ -1,24 +1,58 @@
 <template>
     <Splitter class="h-full border-1 border-200" layout="vertical">
-        <SplitterPanel class="flex">
-            <div class="flex-grow-1 flex flex-column gap-2">
-                <template v-for="(chunk, index) in chunks" :key="index">
-                    <div class="border-1 border-200 border-round p-2">
-                        <p class="text-sm text-light">{{ chunk.text }}</p>
-                    </div>
-                </template>
-            </div>
-        </SplitterPanel>
-        <SplitterPanel class="flex flex-column gap-1 p-2">
-            <div class="flex-grow-1">
-                <div
-                    v-if="queryResponse"
-                    class="border-200 border-1 border-round h-2 p-3 flex-grow-0 flex-column"
-                >
-                    <p class="text-lg font-medium">Mixtral</p>
-                    <p>{{ queryResponse }}</p>
+        <SplitterPanel class="flex flex-column p-2 h-6">
+            <ScrollPanel class="h-full">
+                <div class="flex-grow-1 flex flex-column gap-2">
+                    <template v-for="(chunk, index) in chunks" :key="index">
+                        <div class="border-1 border-200 border-round p-2">
+                            <p class="text-sm text-light">{{ chunk.text }}</p>
+                        </div>
+                    </template>
                 </div>
-            </div>
+            </ScrollPanel>
+        </SplitterPanel>
+        <SplitterPanel class="flex flex-column gap-1 p-2 h-6">
+            <ScrollPanel class="flex-grow-1 h-full">
+                <div class="h-full flex flex-column gap-2">
+                    <template v-if="chatHistory">
+                        <template
+                            v-for="(item, index) in chatMessages"
+                            :key="index"
+                        >
+                            <div
+                                v-if="index % 2 == 0"
+                                class="border-200 border-1 border-round h-2 p-3 flex-grow-0 flex-column w-9 align-self-end"
+                            >
+                                <span class="text-xs text-300 font-bold"
+                                    >User</span
+                                >
+                                <p>{{ item.content }}</p>
+                            </div>
+                            <div
+                                v-if="index % 2 == 1"
+                                class="border-200 border-1 border-round h-2 p-3 flex-grow-0 w-9 align-self-start"
+                            >
+                                <span class="text-xs text-300 font-bold"
+                                    >Mixtral</span
+                                >
+                                <p>{{ item.content }}</p>
+                            </div></template
+                        >
+                    </template>
+                    <div
+                        v-if="isProcessingQuery"
+                        class="border-200 border-1 border-round h-2 p-3 flex-grow-0 w-9 align-self-start"
+                    >
+                        <span class="text-xs text-300 font-bold">Mixtral</span>
+                        <ProgressBar
+                            v-if="!isGeneratingResponse"
+                            mode="indeterminate"
+                            style="height: 6px"
+                        ></ProgressBar>
+                        <p>{{ queryResponse }}</p>
+                    </div>
+                </div>
+            </ScrollPanel>
             <div class="flex gap-1">
                 <InputText
                     v-model="query"
@@ -26,30 +60,35 @@
                     type="text"
                     @keyup.enter="sendQuery"
                 ></InputText>
-                <Button
-                    label="Send"
-                    icon="pi pi-send"
-                    @click="sendQuery"
-                ></Button>
+                <BlockUI :blocked="canSendQuery ? false : true">
+                    <Button
+                        label="Send"
+                        icon="pi pi-send"
+                        @click="sendQuery"
+                    ></Button>
+                </BlockUI>
             </div>
         </SplitterPanel>
     </Splitter>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import ApiService from "@/services/ApiService.ts";
 import ChatRequestBuilder from "@/services/types/ChatRequest.ts";
+import ScrollPanel from "primevue/scrollpanel";
 
 const chunks = ref([]);
 const query = ref("Wie ist die Diagnose?");
 const queryResponse = ref("");
+const chatHistory = ref(null);
+const isProcessingQuery = ref(false);
+const isGeneratingResponse = ref(false);
 
 const props = defineProps(["patientId"]);
 
 async function readStream(reader) {
     let { done, value } = await reader.read();
-
     while (!done) {
         const response = new TextDecoder().decode(value).trim();
         // When streaming, sometimes more than one response is received at a time. Individual responses are separated by newlines.
@@ -63,19 +102,34 @@ async function readStream(reader) {
         });
 
         ({ done, value } = await reader.read());
+        isGeneratingResponse.value = true;
     }
+
+    isGeneratingResponse.value = false;
+    isProcessingQuery.value = false;
+    chatHistory.value.addMessage("assistant", queryResponse.value);
+    queryResponse.value = "";
 }
 
 async function sendQuery() {
     try {
-        const chatRequest = new ChatRequestBuilder(props.patientId)
-            .addMessage(
-                "system",
-                "Antworte auf Deutsch! Sei so kurz und knapp wie möglich."
-            )
-            .addMessage("user", query.value)
-            .build();
+        if (!canSendQuery.value) return;
+        isProcessingQuery.value = true;
 
+        if (chatHistory.value === null) {
+            chatHistory.value = new ChatRequestBuilder(props.patientId)
+                .addMessage(
+                    "system",
+                    "Antworte auf Deutsch! Sei so kurz und knapp wie möglich."
+                )
+                .addMessage("user", query.value);
+        } else {
+            chatHistory.value.addMessage("user", query.value);
+        }
+
+        query.value = "";
+
+        const chatRequest = chatHistory.value.build();
         const response = await ApiService.stream_chat(chatRequest);
         const reader = response.body.getReader();
         readStream(reader);
@@ -83,4 +137,21 @@ async function sendQuery() {
         console.error("API call failed:", error);
     }
 }
+
+// a computed ref
+const chatMessages = computed(() => {
+    return chatHistory.value.chatRequest.messages.slice(1);
+});
+
+const canSendQuery = computed(() => {
+    return !isProcessingQuery.value && query.value != "";
+});
 </script>
+
+<style scoped>
+.user-message {
+}
+
+.assistant-message {
+}
+</style>

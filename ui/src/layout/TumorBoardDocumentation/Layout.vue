@@ -22,15 +22,11 @@
             :unstyled="false"
         >
             <Splitter class="gap-2" style="background: transparent">
-                <SplitterPanel>
-                    <ScrollPanel class="w-full h-full">
-                        <FileIndexing :patient-id="patientId"></FileIndexing>
-                    </ScrollPanel>
+                <SplitterPanel class="flex">
+                    <FileIndexing :patient-id="patientId"></FileIndexing>
                 </SplitterPanel>
                 <SplitterPanel>
-                    <ScrollPanel class="w-full h-full">
-                        <Documentation></Documentation>
-                    </ScrollPanel>
+                    <Documentation></Documentation>
                 </SplitterPanel>
             </Splitter>
         </SplitterPanel>

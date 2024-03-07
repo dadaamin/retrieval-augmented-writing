@@ -20,6 +20,7 @@ import Avatar from "primevue/avatar";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import ColorPicker from "primevue/colorpicker";
+import ProgressBar from "primevue/progressbar";
 
 import DraggableDirective from "@/directives/DraggableDirective";
 import DroppableDirective from "@/directives/DroppableDirective";
@@ -48,6 +49,7 @@ app.component("Avatar", Avatar);
 app.component("InputGroup", InputGroup);
 app.component("InputGroupAddon", InputGroupAddon);
 app.component("ColorPicker", ColorPicker);
+app.component("ProgressBar", ProgressBar);
 
 // Register directives
 app.directive("draggable", DraggableDirective);
