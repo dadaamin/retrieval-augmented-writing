@@ -45,18 +45,15 @@ async function readStream(reader) {
   let { done, value } = await reader.read();
 
   while (!done) {
-    const message = new TextDecoder().decode(value).trim();
-    // sometimes more than one token is received at the same time, these are separated by newlines
-    const messages = message.split("\n");
-
+    const response = new TextDecoder().decode(value).trim();
+    // When streaming, sometimes more than one response is received at a time. Individual responses are separated by newlines.
+    const messages = response.split("\n");
     messages.forEach((message) => {
-      const jsonMessage = JSON.parse(message);
-
-      if (Array.isArray(jsonMessage)) {
-        chunks.value = jsonMessage;
-      } else {
-        queryResponse.value += jsonMessage["message"];
+      const data = JSON.parse(message);
+      if (data.source_nodes !== undefined) {
+        chunks.value = data.source_nodes;
       }
+      queryResponse.value += data["message"];
     });
 
     ({ done, value } = await reader.read());
