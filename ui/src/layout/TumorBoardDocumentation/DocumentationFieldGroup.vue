@@ -2,7 +2,7 @@
     <slot>There are no document fields to display.</slot>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useSlots, useAttrs } from "vue";
 import DocumentationField from "@/layout/TumorBoardDocumentation/DocumentationField.vue";
@@ -16,12 +16,18 @@ onMounted(() => {
     // Note: Direct manipulation or iteration over these VNodes for dynamic rendering purposes is not typical Vue practice
 });
 
+function selectField(index) {
+    console.log("hellooo");
+    console.log(index);
+}
+
 function test() {
     slotContent.value.forEach((vnode, index) => {
         // This is a highly theoretical example; actual structure might vary
         if (vnode.type === DocumentationField) {
             vnode.props.index = index;
             console.log(vnode);
+            vnode.$on("selectField", selectField);
             console.log("DocumentationField label:", vnode.props.index);
         }
     });

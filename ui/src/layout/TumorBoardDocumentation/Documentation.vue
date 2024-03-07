@@ -1,5 +1,7 @@
 <template>
-    <div class="w-full h-full p-2 border-1 border-200 border-round bg-white">
+    <div
+        class="w-full h-full p-2 p-splitter border-1 border-200 flex flex-column"
+    >
         <DocumentationFieldGroup>
             <DocumentationField label="Name" />
             <DocumentationField label="Diagnose" />

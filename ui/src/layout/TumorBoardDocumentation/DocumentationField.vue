@@ -1,30 +1,25 @@
 <template>
-    <BlockUI
-        :blocked="!isActive"
-        :unstyled="false"
-        @click="toggleBlock"
-        class="invisible-block-ui"
-    >
-        <InputGroup class="p-2">
-            <Button
-                :label="label"
-                style="min-width: 10rem; max-width: 15rem"
-                :severity="isActive ? 'primary' : 'secondary'"
-                @click="emit('selectField')"
-            />
-            <InputText
-                v-if="type == 'text'"
-                v-model="fieldValue"
-                type="text"
-                @input="invalidateField"
-            />
-            <Button
-                :severity="isAccepted ? 'success' : 'secondary'"
-                icon="pi pi-check-circle"
-                @click="acceptField"
-            />
-        </InputGroup>
-    </BlockUI>
+    <InputGroup class="p-2">
+        <Button
+            :label="label"
+            style="min-width: 10rem; max-width: 15rem"
+            :severity="isActive ? 'primary' : 'secondary'"
+            @click="toggleBlock"
+        />
+        <InputText
+            :disabled="!isActive"
+            v-if="type == 'text'"
+            v-model="fieldValue"
+            type="text"
+            @input="invalidateField"
+        />
+        <Button
+            :disabled="!isActive"
+            :severity="isAccepted ? 'success' : 'secondary'"
+            icon="pi pi-check-circle"
+            @click="acceptField"
+        />
+    </InputGroup>
 </template>
 
 <script setup lang="ts">
@@ -52,7 +47,7 @@ const emit = defineEmits(["selectField"]);
 
 function toggleBlock() {
     isActive.value = true;
-    console.log("test");
+    emit("selectField", { index: props.index });
 }
 
 function invalidateField() {
@@ -64,7 +59,7 @@ function acceptField() {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .invisible-block-ui .p-blockui {
     background: transparent !important;
 }
