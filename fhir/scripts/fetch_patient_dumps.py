@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import os
 from pathlib import Path
 
@@ -11,6 +11,8 @@ tqdm.pandas()
 
 from fhir_pyrate import Ahoy, Pirate
 
+out_file = Path("fhir/data/patient-documents.jsonl")
+n_patients = 10
 form_to_ext = {
     "text/plain; charset=UTF-8": "txt",
     "application/pdf": "pdf",
@@ -61,7 +63,7 @@ def download_document(doc):
                 try:
                     content = download_file(url)
                 except requests.exceptions.HTTPError:
-                    logger.info(f'Could not download file ({base_path}): {url}')
+                    logger.info(f"Could not download file ({base_path}): {url}")
                     continue
 
                 with open(f"{base_path}.{form_to_ext[form]}", "wb") as f_w:
@@ -84,7 +86,7 @@ def download_document(doc):
             try:
                 content = download_file(url)
             except requests.exceptions.HTTPError:
-                logger.info(f'Could not download file ({base_path}): {url}')
+                logger.info(f"Could not download file ({base_path}): {url}")
                 return presented_form
             with open(doc_path, "wb") as f_w:
                 f_w.write(content)
@@ -133,10 +135,14 @@ def fetch_patient_documents(patient_id):
     return documents
 
 
-for patient in mtb_patients[:10]:
+if out_file.exists():
+    print(f"{out_file} already exists. Skipping")
+    exit(0)
+
+for patient in mtb_patients[:n_patients]:
     documents = fetch_patient_documents(patient["patient_id"])
-
-documents = documents.to_dict(orient="records")
-
-with open("fhir/data/patient-documents.json", "w") as f_w:
-    json.dump(documents, f_w)
+    documents = documents.to_dict(orient="records")
+    for doc in documents:
+        with open(out_file, "a") as f_w:
+            json.dump(doc, f_w)
+            f_w.write("\n")
