@@ -118,7 +118,6 @@
         <DocumentationField
             label="Westdeutsches Tumorzentrum Seite 4 von 4 gedruckt am 25.01.2024 13:18 Uhr"
         />
->>>>>>> Stashed changes
     </div>
 </template>
 
