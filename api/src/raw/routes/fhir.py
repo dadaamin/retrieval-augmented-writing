@@ -32,8 +32,8 @@ class DocumentContent(BaseModel):
 
 
 def load_documents(json_path):
-    df_documents = pd.read_json(json_path, lines=True)
-    df_documents = df_documents.rename(
+    df = pd.read_json(json_path, lines=True)
+    df = df.rename(  # pylint: disable=E1101
         {
             "id": "document_id",
             "resourceType": "resource_type",
@@ -57,8 +57,8 @@ def load_documents(json_path):
             )
         return forms
 
-    df_documents["presented_form"] = df_documents["presented_form"].apply(rename_forms)
-    return df_documents
+    df["presented_form"] = df["presented_form"].apply(rename_forms)
+    return df
 
 
 def load_patients(json_path):
