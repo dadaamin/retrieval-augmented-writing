@@ -1,6 +1,7 @@
 import argparse
 import os
 from pathlib import Path
+from typing import List
 
 from llama_index.core import (
     Settings,
@@ -10,8 +11,10 @@ from llama_index.core import (
     load_index_from_storage,
 )
 from llama_index.core.node_parser import SimpleNodeParser
+from llama_index.core.schema import Document
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import AsyncQdrantClient, QdrantClient, models
+from tqdm import tqdm
 
 from raw.ollama import Ollama
 
@@ -46,7 +49,11 @@ def init_settings():
     )
 
     node_parser = SimpleNodeParser.from_defaults(chunk_size=512, chunk_overlap=32)
-    Settings.embed_model = "local:BAAI/bge-small-en-v1.5"
+    # Embeddings leaderboard: https://huggingface.co/spaces/mteb/leaderboard
+    # MiniLM strikes a balance of being fast (384 dims) and doing good on major languages
+    Settings.embed_model = (
+        "local:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    )
     Settings.node_parser = node_parser
 
 
@@ -54,19 +61,19 @@ def get_llm():
     return Settings.llm
 
 
-def load_documents(data_path):
+def load_documents(data_path) -> List[Document]:
     docs = SimpleDirectoryReader(data_path, filename_as_id=True).load_data()
     for doc in docs:
         doc.metadata["patient_id"] = Path(doc.metadata["file_name"]).stem
     return docs
 
 
-def create_index(data_path):
+def create_index(documents: List[Document]):
     index = get_index()
     client = index.vector_store.client
     collection_name = index.vector_store.collection_name
 
-    for doc in load_documents(data_path):
+    for doc in tqdm(documents, desc="Insert documents into index."):
         index.insert(doc)
         print(doc.get_doc_id())
 
@@ -84,11 +91,10 @@ def create_index(data_path):
     index.storage_context.persist(persist_dir="./storage")
 
 
-def update_index(data_path):
+def update_index(documents: List[Document]):
     index = get_index()
-    docs = load_documents(data_path)
-    updated = index.refresh_ref_docs(docs)
-    for doc, is_new in zip(docs, updated):
+    updated = index.refresh_ref_docs(documents)
+    for doc, is_new in zip(documents, updated):
         print(doc.get_doc_id(), f"Updated: {is_new}")
     index.storage_context.persist(persist_dir="./storage")
 
@@ -104,9 +110,11 @@ def main(args):
     init_settings()
 
     if args.command == "create":
-        create_index(args.data_path)
+        documents = load_documents(args.data_path)
+        create_index(documents)
     elif args.command == "update":
-        update_index(args.data_path)
+        documents = load_documents(args.data_path)
+        update_index(documents)
     elif args.command == "delete":
         delete_index()
     else:

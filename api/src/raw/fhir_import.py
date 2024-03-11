@@ -4,6 +4,7 @@ from pathlib import Path
 
 from llama_index.core.readers import SimpleDirectoryReader
 
+from raw.engine import create_index, init_settings
 from raw.loader import PDFReaderPlus, TesseractReader
 
 INDEXING_PRIORITY = {
@@ -107,12 +108,12 @@ def main():
     files_to_index = metadata.keys()
     files_to_index = [DOCS_BASE_PATH / f for f in files_to_index]
 
-    # TODO: load all docs
     reader = SimpleDirectoryReader(
-        input_files=files_to_index[:50],
+        input_files=files_to_index[50:],
         filename_as_id=True,
         file_extractor=CUSTOM_READERS,
     )
+    print("Load documents from files.")
     docs = reader.load_data(show_progress=True, num_workers=8)
 
     # Add metadata (presented forms, ship ID, patient_id, ...)
@@ -124,7 +125,8 @@ def main():
         doc.metadata.pop("file_path", None)
         doc.metadata = {**doc.metadata, **metadata[file_name]}
 
-    # TODO: load into llama-index
+    init_settings()
+    create_index(docs)
 
 
 if __name__ == "__main__":
