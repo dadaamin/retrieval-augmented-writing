@@ -48,7 +48,9 @@ def init_settings():
     )
 
     node_parser = SimpleNodeParser.from_defaults(chunk_size=512, chunk_overlap=32)
-    Settings.embed_model = "local:BAAI/bge-small-en-v1.5"
+    # Embeddings leaderboard: https://huggingface.co/spaces/mteb/leaderboard
+    # MiniLM strikes a balance of being fast (384 dims) and doing good on major languages
+    Settings.embed_model = "local:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     Settings.node_parser = node_parser
 
 
