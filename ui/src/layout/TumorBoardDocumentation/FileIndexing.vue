@@ -4,7 +4,10 @@
             <ScrollPanel class="h-full">
                 <div class="flex-grow-1 flex flex-column gap-2">
                     <template v-for="(chunk, index) in chunks" :key="index">
-                        <div class="border-1 border-200 border-round p-2">
+                        <div
+                            class="border-1 border-200 border-round p-2"
+                            style="white-space: pre-wrap"
+                        >
                             <p class="text-sm text-light">{{ chunk.text }}</p>
                         </div>
                     </template>

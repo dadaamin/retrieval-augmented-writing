@@ -41,5 +41,7 @@ import FileIndexing from "@/layout/TumorBoardDocumentation/FileIndexing.vue";
 import Documentation from "@/layout/TumorBoardDocumentation/Documentation.vue";
 
 // const props = defineProps(["patientId"]);
-const patientId = ref("p1");
+const patientId = ref(
+    "Patient/70cd56ad887462a0bff46c879ea4dfb478b1035e07da61596ba75a526105aad3"
+);
 </script>
