@@ -2,16 +2,20 @@
     <Splitter class="h-full border-1 border-200" layout="vertical">
         <SplitterPanel class="flex flex-column p-2 h-6">
             <ScrollPanel class="h-full">
-                <div class="flex-grow-1 flex flex-column gap-2">
-                    <template v-for="(chunk, index) in chunks" :key="index">
-                        <div
-                            class="border-1 border-200 border-round p-2"
+                <TabView v-if="chunks.length > 0">
+                    <TabPanel
+                        v-for="(chunk, index) in chunks"
+                        :key="index"
+                        :header="`Ergebnis ${index + 1}`"
+                    >
+                        <p
+                            class="text-sm text-light"
                             style="white-space: pre-wrap"
                         >
-                            <p class="text-sm text-light">{{ chunk.text }}</p>
-                        </div>
-                    </template>
-                </div>
+                            {{ chunk.text }}
+                        </p>
+                    </TabPanel>
+                </TabView>
             </ScrollPanel>
         </SplitterPanel>
         <SplitterPanel class="flex flex-column gap-1 p-2 h-6">
@@ -80,6 +84,8 @@ import { ref, computed } from "vue";
 import ApiService from "@/services/ApiService.ts";
 import ChatRequestBuilder from "@/services/types/ChatRequest.ts";
 import ScrollPanel from "primevue/scrollpanel";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 
 const chunks = ref([]);
 const query = ref("Wie ist die Diagnose?");
