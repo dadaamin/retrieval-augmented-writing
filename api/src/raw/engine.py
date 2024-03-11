@@ -14,6 +14,7 @@ from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core.schema import Document
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import AsyncQdrantClient, QdrantClient, models
+from tqdm import tqdm
 
 from raw.ollama import Ollama
 
@@ -50,7 +51,9 @@ def init_settings():
     node_parser = SimpleNodeParser.from_defaults(chunk_size=512, chunk_overlap=32)
     # Embeddings leaderboard: https://huggingface.co/spaces/mteb/leaderboard
     # MiniLM strikes a balance of being fast (384 dims) and doing good on major languages
-    Settings.embed_model = "local:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    Settings.embed_model = (
+        "local:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    )
     Settings.node_parser = node_parser
 
 
@@ -70,7 +73,7 @@ def create_index(documents: List[Document]):
     client = index.vector_store.client
     collection_name = index.vector_store.collection_name
 
-    for doc in documents:
+    for doc in tqdm(documents, desc="Insert documents into index."):
         index.insert(doc)
         print(doc.get_doc_id())
 
