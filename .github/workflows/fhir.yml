@@ -1,4 +1,4 @@
-name: api
+name: fhir
 on: [push]
 
 # https://stackoverflow.com/a/72408109
@@ -28,7 +28,6 @@ jobs:
         run: |
           micromamba activate raw-fhir
           pip install -r requirements-dev.txt
-          pip install -e .
 
       - name: Run lint
         shell: bash -l {0}
