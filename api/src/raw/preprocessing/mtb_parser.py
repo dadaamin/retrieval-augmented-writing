@@ -104,6 +104,15 @@ def parse(txt, debug=False):
                 print(line)
             section[current_field] += line + "\n"
 
+        if (
+            len(sections) == 0
+            and section["_name"] == "header"
+            and len(section["_text"]) > 200
+        ):
+            # for a small fraction of documents the docx --> ASCII conversion is broken (there are too few newlines)
+            # when we find that the header grows larger than a typical header, we skip parsing altogether
+            return []
+
     sections.append(dict(section))
 
     for section in sections:
@@ -112,10 +121,14 @@ def parse(txt, debug=False):
             and "Molekulares Profil & prädiktive Marker" in section
         ):
             markers = section.pop("Molekulares Profil & prädiktive Marker")
-            markers = parse_markers(
-                "Molekulares Profil & prädiktive Marker\n" + markers
-            )
-            section["marker"] = markers
+            try:
+
+                markers = parse_markers(
+                    "Molekulares Profil & prädiktive Marker\n" + markers
+                )
+                section["marker"] = markers
+            except ValueError:
+                section["marker"] = []
 
     return sections
 
@@ -142,8 +155,11 @@ def parse_markers(s):
         ...
     """
     s = s.strip()
-    columns = s[: s.index("\n\n\n")].strip().split("\n")
-    data = s[s.index("\n\n\n") + 3 :].split('\n')
+
+    # Table format seems to be inconsistent (2-3 newlines in between header and first row).
+    header_sep = "\n\n\n" if "\n\n\n" in s else "\n\n"
+    columns = s[: s.index(header_sep)].strip().split("\n")
+    data = s[s.index(header_sep) + len(header_sep) :].split("\n")
     rows = []
     row = {}
     i = 0
