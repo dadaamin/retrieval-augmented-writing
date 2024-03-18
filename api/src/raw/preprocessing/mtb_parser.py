@@ -139,6 +139,7 @@ def parse_markers(s):
         v5
         ...
     """
+    s = s.strip()
     columns = s[: s.index("\n\n")].split("\n")
     data = s[s.index("\n\n") + 2 :]
     rows = []
@@ -153,5 +154,8 @@ def parse_markers(s):
             rows.append(row)
             row = {}
     if len(row) > 0:
+        for c in columns:
+            if c not in row:
+                row[c] = ""
         rows.append(row)
     return rows

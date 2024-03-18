@@ -15,6 +15,8 @@ def test_parse_markers():
         },
     ]
 
+
+def test_markers_missing_values():
     s = "Molekulares Profil & prädiktive Marker\nAngewandte Methode\nAlteration\nBiologische Bewertung\n\nKRAS\nNGS-extern\nG13D\npathogenic\n\nMET\nNGS-extern\nExon 14, Skipping\n\n\nCTNNB1\nNGS-extern\np.D32Y\n\n\nESR1\nNGS-extern\np.Y537N\n\n\nMS-Status\n\n\nstabil"
     result = parse_markers(s)
     pprint(result)
@@ -48,5 +50,21 @@ def test_parse_markers():
             "Angewandte Methode": "",
             "Biologische Bewertung": "stabil",
             "Molekulares Profil & prädiktive Marker": "MS-Status",
+        },
+    ]
+
+
+def test_markers_trailing_ws():
+    # trailing ws should not lead to a new row
+    # a missing value at the end of a row should still lead to that field present in the dict
+    s = "Molekulares Profil & prädiktive Marker\nAngewandte Methode\nAlteration\nBiologische Bewertung\n\nKRAS\nNGS-extern\nG13D\n\n\n\n"
+    result = parse_markers(s)
+    pprint(result)
+    assert result == [
+        {
+            "Alteration": "G13D",
+            "Angewandte Methode": "NGS-extern",
+            "Biologische Bewertung": "",
+            "Molekulares Profil & prädiktive Marker": "KRAS",
         },
     ]
