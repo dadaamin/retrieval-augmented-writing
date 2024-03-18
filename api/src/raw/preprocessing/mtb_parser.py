@@ -177,3 +177,12 @@ def parse_markers(s):
                 row[c] = ""
         rows.append(row)
     return rows
+
+
+def parse_type(txt):
+    if "prädiagnostisch" in txt[:250].lower():
+        return "prädiagnostisch"
+    elif "postdiagnostisch" in txt[:250].lower():
+        return "postdiagnostisch"
+    else:
+        return "other"
