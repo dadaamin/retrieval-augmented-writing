@@ -145,7 +145,6 @@ def parse_markers(s):
     row = {}
     i = 0
     for line in data.split("\n"):
-        print(i, line, row)
         if i < len(columns):
             row[columns[i]] = line
             i += 1
