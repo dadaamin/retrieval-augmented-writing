@@ -122,7 +122,9 @@ def parse(txt, debug=False):
 
 def parse_markers(s):
     """
-    Tables such as molecular genetic analysis. Values are separated by newlines. Rows are separated by two consecutive newlines. Column headers are first row. An empty line within one row indicates a missing value and is parsed as such.
+    Tables such as molecular genetic analysis. Values are separated by newlines. Rows are separated by two consecutive newlines. Column headers come first, separated from first row by three newlines. An empty line within one row indicates a missing value and is parsed as such.
+
+    Caveat: when there are newlines within values/cells this results will be misaligned.
 
     Example
     -------
@@ -140,12 +142,12 @@ def parse_markers(s):
         ...
     """
     s = s.strip()
-    columns = s[: s.index("\n\n")].split("\n")
-    data = s[s.index("\n\n") + 2 :]
+    columns = s[: s.index("\n\n\n")].strip().split("\n")
+    data = s[s.index("\n\n\n") + 3 :].split('\n')
     rows = []
     row = {}
     i = 0
-    for line in data.split("\n"):
+    for line in data:
         if i < len(columns):
             row[columns[i]] = line
             i += 1
