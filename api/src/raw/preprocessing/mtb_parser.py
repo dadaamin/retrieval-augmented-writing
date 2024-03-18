@@ -1,4 +1,7 @@
-import json
+"""
+Parse ASCII renderings of .docx MTB-protocols. Documents are parsed line-by-line. Section boundaries are identified through a whitelist of section headers. The parser does not yield proper results when section headers are not separated by newlines.
+"""
+
 from collections import defaultdict
 
 SECTIONS = {
@@ -118,6 +121,24 @@ def parse(txt, debug=False):
 
 
 def parse_markers(s):
+    """
+    Tables such as molecular genetic analysis. Values are separated by newlines. Rows are separated by two consecutive newlines. Column headers are first row. An empty line within one row indicates a missing value and is parsed as such.
+
+    Example
+    -------
+        c1
+        c2
+        c3
+        c4
+
+        v1
+        [missing]
+        v3
+        v4
+
+        v5
+        ...
+    """
     columns = s[: s.index("\n\n")].split("\n")
     data = s[s.index("\n\n") + 2 :]
     rows = []
