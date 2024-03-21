@@ -109,7 +109,7 @@ def main():
     files_to_index = [DOCS_BASE_PATH / f for f in files_to_index]
 
     reader = SimpleDirectoryReader(
-        input_files=files_to_index[50:],
+        input_files=files_to_index,
         filename_as_id=True,
         file_extractor=CUSTOM_READERS,
     )
@@ -122,8 +122,7 @@ def main():
         doc.doc_id = Path(doc.doc_id).name
         file_name = Path(doc.metadata["file_path"]).name
         doc.metadata["file_name"] = file_name
-        doc.metadata.pop("file_path", None)
-        doc.metadata = {**doc.metadata, **metadata[file_name]}
+        doc.metadata["patient_id"] = metadata[file_name]["patient_id"]
 
     init_settings()
     create_index(docs)

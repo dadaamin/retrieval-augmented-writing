@@ -72,10 +72,9 @@ def create_index(documents: List[Document]):
     index = get_index()
     client = index.vector_store.client
     collection_name = index.vector_store.collection_name
-
     for doc in tqdm(documents, desc="Insert documents into index."):
-        index.insert(doc)
         print(doc.get_doc_id())
+        index.insert(doc)
 
     index.vector_store.client.create_payload_index(
         collection_name=collection_name,
