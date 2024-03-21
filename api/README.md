@@ -19,10 +19,9 @@ brew install tesseract
 
 ## Development
 
-Start services.
+Run vectorstore.
 
 ```sh
-# Run vector store
 docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:latest
 
 # Configure URLs
@@ -30,11 +29,21 @@ docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:latest
 export QDRANT_LOCATION=http://localhost:6333/
 export QDRANT_COLLECTION=mtb_protocols
 export OLLAMA_BASE_URL=https://mirage.kite.ume.de/ollama
+```
 
-# Insert seed data
+Index data
+
+```sh
+# Option 1: arbitrary files from data/
 python -m raw.engine create --data_path data/
 
-# Run search API
+# Option 2: fhir dump (first make sure to download the files with the FHIR scripts)
+python -m raw.fhir_import
+```
+
+Start backend:
+
+```sh
 uvicorn raw.main:app --reload
 ```
 
