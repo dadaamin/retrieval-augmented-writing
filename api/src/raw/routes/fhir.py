@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import List
+import logging
 
 import pandas as pd
 from fastapi import APIRouter
@@ -7,6 +8,8 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.INFO)
 
 class PresentedForm(BaseModel):
     url: str
@@ -77,7 +80,7 @@ def patients() -> List[str]:
 
 @router.get("/documents", response_model=List[Document])
 def documents(patient_id):
-    mask = df_documents["patient_id"] == patient_id
+    mask = df_documents["patient_id"] == f"Patient/{patient_id}"
     return df_documents[mask].to_dict(orient="records")
 
 

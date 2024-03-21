@@ -8,6 +8,11 @@ const routes: Array<RouteRecordRaw> = [
         children: [
             {
                 path: "/",
+                redirect:
+                    "/mtb-protocol?patient=5ab37373015afdba99481e774141ddee2346e891e8c4d8444f17c3d2d38d7d74",
+            },
+            {
+                path: "/mtb-protocol",
                 // route level code-splitting
                 // this generates a separate chunk (about.[hash].js) for this route
                 // which is lazy-loaded when the route is visited.
