@@ -26,6 +26,7 @@ Start services.
 docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant:latest
 
 # Configure URLs
+# when changing these urls, please also change the urls in api/raw/main.py
 export QDRANT_LOCATION=http://localhost:6333/
 export QDRANT_COLLECTION=mtb_protocols
 export OLLAMA_BASE_URL=https://mirage.kite.ume.de/ollama
