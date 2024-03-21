@@ -11,6 +11,12 @@ pip install -e .
 conda install nomkl
 ```
 
+You will also need tesseract for indexing of documents (scans and PDFs with no text). For https://tesseract-ocr.github.io/tessdoc/Installation.html
+
+```sh
+brew install tesseract
+```
+
 ## Development
 
 Start services.
